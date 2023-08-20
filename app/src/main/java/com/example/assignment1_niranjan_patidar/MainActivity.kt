@@ -3,6 +3,7 @@ package com.example.assignment1_niranjan_patidar
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,19 +18,36 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import com.example.assignment1_niranjan_patidar.api.FacilitiesApi
+import com.example.assignment1_niranjan_patidar.api.RetrofitHelper
+import com.example.assignment1_niranjan_patidar.repository.FacilityRepository
 import com.example.assignment1_niranjan_patidar.ui.theme.Assignment1_Niranjan_PatidarTheme
-
+import com.example.assignment1_niranjan_patidar.viewModels.MainViewModel
+import com.example.assignment1_niranjan_patidar.viewModels.MainViewModelFactory
+lateinit var mainViewModel: MainViewModel
+lateinit var  apiservice:FacilitiesApi
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+         apiservice = RetrofitHelper.getInstance().create(FacilitiesApi::class.java)
+        val repository = FacilityRepository(apiservice)
+        mainViewModel = ViewModelProvider(this,MainViewModelFactory(repository)).get(MainViewModel::class.java)
+        mainViewModel.facilities.observe(
+            this
+        ) {
+            Log.i("facility", it.facilities.toString())
+        }
+
         setContent {
             Assignment1_Niranjan_PatidarTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
-                ){
-                        createForm( "User preferences")
+                )
+                {
+                    createForm( "User preferences")
                 }
             }
         }
@@ -40,24 +58,22 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun createForm(name: String) {
-
-  var selectedCheckboxIndex1 by remember { mutableStateOf(-1) }
+    var selectedCheckboxIndex1 by remember { mutableStateOf(-1) }
     var selectedCheckboxIndex2 by remember { mutableStateOf(-1) }
     var selectedCheckboxIndex3 by remember { mutableStateOf(-1) }
 
     val checkboxOptions1 = listOf("Option 0", "Option 1", "Option 2", "Option 3")
     val checkboxOptions2 = listOf("Option 0", "Option 1")
     val checkboxOptions3 = listOf("Option 0", "Option 1", "Option 2")
-
-
     val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(16.dp),
 
-        ) {
+        ){
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "$name",
@@ -184,7 +200,6 @@ fun createForm(name: String) {
                 Button(
                     onClick = {
                         Toast.makeText(context, "Hello mr programmer", Toast.LENGTH_SHORT).show()
-
                     },
                     modifier = Modifier
                         .width(150.dp)
