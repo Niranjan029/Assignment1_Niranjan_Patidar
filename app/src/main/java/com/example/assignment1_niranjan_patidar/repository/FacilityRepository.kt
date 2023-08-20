@@ -1,5 +1,6 @@
 package com.example.assignment1_niranjan_patidar.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.assignment1_niranjan_patidar.api.FacilitiesApi
@@ -18,8 +19,6 @@ class FacilityRepository(private val facilitiesApi:FacilitiesApi) {
         {
             facilityLiveData.postValue(result.body())
         }
-
-
     }
 
 }
